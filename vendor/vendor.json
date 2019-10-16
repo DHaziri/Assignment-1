@@ -1,6 +1,7 @@
 {
-	"comment": "",
-	"ignore": "test",
-	"package": [],
-	"rootPath": "github.com/DHaziri/Assigment1"
+    "rootPath": "github.com/DHaziri/Assigment1",
+    "heroku": {
+        "install" : [ "./..." ],
+        "goVersion": "go1.12.10"
+         },
 }
