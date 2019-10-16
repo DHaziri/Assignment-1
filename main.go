@@ -87,12 +87,12 @@ func country(w http.ResponseWriter, r *http.Request){
 
           // Adds the country code to the urls,
   urlCI += splits[4]
-  urlCS += splits[4]
+  urlCS += strings.ToUpper(splits[4])
 
   limit := 20 // Matching the default limit
 
           // If user asks for a bigger or lower limit
-  if len(splits) == 6 {
+  if len(splits) >= 6 && splits[5] != ""   {
           // converts the string containig the limit into an int
     limit, _ = strconv.Atoi(splits[5])
           // adds the limit to gbif url
@@ -103,15 +103,15 @@ func country(w http.ResponseWriter, r *http.Request){
 
           // Gets the url for countries
 	resCountryInfo, err := http.Get(urlCI)
-    if err != nil {
-				fmt.Print(err.Error())
-				os.Exit(1)
-      }
+  if err != nil {
+			fmt.Print(err.Error())
+			os.Exit(1)
+  }
           // reads in the api for countries
 	resCIData, err := ioutil.ReadAll(resCountryInfo.Body)
-    if err != nil {
-				log.Fatal(err)
-  	  }
+  if err != nil {
+			log.Fatal(err)
+  }
           // declaring a struct and filling inn the json and api for countries
 	var resCIObject CountryInfo
 	json.Unmarshal(resCIData, &resCIObject)
@@ -119,14 +119,14 @@ func country(w http.ResponseWriter, r *http.Request){
 
           // Gets the url for species
   resCountrySpecies, err := http.Get(urlCS)
-		if err != nil {
-				panic(err)
-		}
+	if err != nil {
+			panic(err)
+	}
           // reads in the api for species
 	resCSData, err := ioutil.ReadAll(resCountrySpecies.Body)
-		if err != nil {
-				panic(err)
-		}
+	if err != nil {
+			panic(err)
+	}
           // declaring a struct and filling inn the json and api for species
   var resCSObject CountrySpecies
   json.Unmarshal(resCSData, &resCSObject)
@@ -137,9 +137,9 @@ func country(w http.ResponseWriter, r *http.Request){
   responseCountry.Code = resCIObject.Code
   responseCountry.Name = resCIObject.Name
   responseCountry.Flag = resCIObject.Flag
-  for i := 0; i < limit; i++ {
-  responseCountry.Species = append(responseCountry.Species, resCSObject.CouSpe[i].Species)
-  responseCountry.SpeciesKey = append(responseCountry.SpeciesKey, resCSObject.CouSpe[i].SpeciesKey)
+  for i := 0; i < limit && i < len(resCSObject.CouSpe); i++ {
+    responseCountry.Species = append(responseCountry.Species, resCSObject.CouSpe[i].Species)
+    responseCountry.SpeciesKey = append(responseCountry.SpeciesKey, resCSObject.CouSpe[i].SpeciesKey)
   }
 
 
